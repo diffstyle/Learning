@@ -1,0 +1,4 @@
+环境变量优先级
+
+安装了python-dotenv后
+手动设置环境的环境变量 > .env > .flaskenv 
