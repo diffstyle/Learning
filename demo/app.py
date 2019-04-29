@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*
 # __author__ = 'Zhang Shi Qiang'
-from flask import Flask, request, redirect, url_for, abort
+from flask import Flask, request, redirect, url_for, abort, make_response
 
 app = Flask(__name__)
 
@@ -22,10 +22,19 @@ def index():
     return '<h1> Hello Flask! </h1>'
 
 
+@app.route('/set/<name>')
+def set_cookie(name):
+    response = make_response(redirect(url_for('say_hello')))
+    response.set_cookie('name', name)
+    return response
+
+
 @app.route('/hi')
 @app.route('/hello')
 def say_hello():
-    name = request.args.get('name', 'Flask')
+    name = request.args.get('name')
+    if name is None:
+        name = request.cookies.get('name','Flask')
     return '<h1>Hello, %s! </h1>' % name
 
 
@@ -69,6 +78,38 @@ def teapot(drink):
         abort(418)
     else:
         return 'A drop of tea.'
+
+
+@app.route('/note/<any(text,html,xml,json):t_types>')
+def note_type(t_types):
+    data ={
+        'name':'Cola Zhang',
+        'gender':'male'
+    }
+    data1 = 'name: Coal zhang, gender:male'
+    if t_types == 'json':
+        '''
+        from flask import json
+        response = make_response(json.dumps(data))
+        response.minitpye = 'application/json'
+        return response
+        '''
+        from flask import jsonify
+        return jsonify(data)
+
+    if t_types == 'xml':
+        pass
+
+    if t_types == 'text':
+        response = make_response(data1)
+        response.minitpye = 'text/plain'
+        return response
+
+    if t_types == 'html':
+        pass
+
+    else:
+        return '输入错误'
 
 
 if __name__ == '__main__':
